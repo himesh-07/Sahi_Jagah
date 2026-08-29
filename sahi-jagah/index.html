@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sahi Jagah — complaints that reach the right desk</title>
+<meta name="description" content="Describe a problem in your own language. Sahi Jagah works out which office owns it, drafts the complaint properly, and tells you what to do when the deadline passes.">
+<meta name="theme-color" content="#FBFAF7">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBFAF7;
+  --ink:#17181A;
+  --muted:#5F6067;
+  --rule:#DBD6CB;
+  --stamp:#4A34A6;
+  --stamp-soft:#EEEAFB;
+  --seal:#0E6B4E;
+  --seal-soft:#E4F1EC;
+  --alert:#B4331B;
+  --alert-soft:#FBEAE6;
+  --shadow:0 1px 0 var(--rule);
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;
+  --display:"Bricolage Grotesque",var(--body);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);color:var(--ink);font-family:var(--body);
+  font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%;
+}
+.wrap{max-width:560px;margin:0 auto;padding:20px 18px 72px}
+a{color:var(--stamp)}
+:focus-visible{outline:2.5px solid var(--stamp);outline-offset:2px;border-radius:2px}
+
+/* ---------- masthead ---------- */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:12px;margin-bottom:22px}
+.wordmark{
+  font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:-.02em;
+  line-height:1;margin:0;
+}
+.wordmark span{color:var(--stamp)}
+.tagline{margin:6px 0 0;font-size:13.5px;color:var(--muted)}
+.stepline{
+  display:flex;gap:6px;margin-top:14px;font-family:var(--mono);
+  font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+  flex-wrap:wrap;
+}
+.stepline b{font-weight:400}
+.stepline .on{color:var(--ink);border-bottom:2px solid var(--stamp)}
+
+/* ---------- typography ---------- */
+h2.q{font-family:var(--display);font-weight:700;font-size:25px;line-height:1.15;letter-spacing:-.02em;margin:0 0 6px}
+.sub{color:var(--muted);font-size:14.5px;margin:0 0 18px}
+.eyebrow{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 8px;
+}
+
+/* ---------- controls ---------- */
+label{display:block;font-size:13px;font-weight:600;margin:0 0 5px}
+textarea,input,select{
+  width:100%;font:inherit;font-size:16px;color:var(--ink);background:#fff;
+  border:1.5px solid var(--rule);border-radius:6px;padding:11px 12px;
+}
+textarea{min-height:132px;resize:vertical;line-height:1.45}
+.row{display:flex;gap:10px}
+.row>*{flex:1;min-width:0}
+.field{margin-bottom:14px}
+.hint{font-size:12.5px;color:var(--muted);margin:5px 0 0}
+
+button{font:inherit;cursor:pointer;border-radius:6px;border:1.5px solid transparent}
+.btn{
+  display:block;width:100%;background:var(--ink);color:var(--paper);
+  padding:14px 16px;font-weight:650;font-size:16px;
+}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--rule);font-weight:600}
+.btn.small{width:auto;padding:9px 14px;font-size:14px}
+.mic{
+  margin-top:10px;background:var(--stamp-soft);color:var(--stamp);border-color:var(--stamp-soft);
+  padding:11px 14px;font-weight:650;font-size:14.5px;width:100%;
+}
+.mic[aria-pressed="true"]{background:var(--stamp);color:#fff}
+.btnrow{display:flex;gap:10px;margin-top:16px}
+.btnrow>*{flex:1}
+
+/* ---------- cards ---------- */
+.card{background:#fff;border:1.5px solid var(--rule);border-radius:8px;padding:16px;margin-bottom:14px}
+.card.seal{border-color:var(--seal);background:var(--seal-soft)}
+.card.warn{border-color:var(--alert);background:var(--alert-soft)}
+
+/* signature: the routing stamp */
+.stamp{
+  position:relative;border:2.5px solid var(--stamp);border-radius:8px;
+  padding:18px 16px 16px;background:#fff;margin-bottom:14px;overflow:hidden;
+}
+.stamp::before{
+  content:"ROUTED";position:absolute;top:12px;right:-30px;
+  transform:rotate(38deg);background:var(--stamp);color:#fff;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.22em;padding:4px 34px;
+}
+.stamp .eyebrow{color:var(--stamp)}
+.dept{font-family:var(--display);font-weight:800;font-size:22px;line-height:1.15;letter-spacing:-.02em;margin:0}
+.deptmeta{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin:6px 0 0;letter-spacing:.03em}
+.why{font-size:14.5px;margin:12px 0 0;padding-top:12px;border-top:1px dashed var(--rule)}
+
+.conf{display:flex;align-items:center;gap:8px;margin-top:12px}
+.bar{flex:1;height:6px;background:var(--stamp-soft);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--stamp)}
+.conf span{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.05em}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{
+  background:#fff;border:1.5px solid var(--rule);border-radius:99px;
+  padding:8px 13px;font-size:13.5px;font-weight:600;text-align:left;
+}
+.chip:hover{border-color:var(--stamp);color:var(--stamp)}
+
+/* ---------- draft panels ---------- */
+.panel{border:1.5px solid var(--rule);border-radius:8px;background:#fff;margin-bottom:12px}
+.panel>h3{
+  margin:0;padding:9px 13px;border-bottom:1.5px solid var(--rule);
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);font-weight:400;background:#FCFBF8;border-radius:7px 7px 0 0;
+}
+.panel .body{padding:13px;font-size:14.5px;white-space:pre-wrap}
+.panel textarea{border:0;border-radius:0 0 7px 7px;min-height:230px;font-size:14.5px;padding:13px}
+
+/* ---------- receipt + register ---------- */
+.receipt{
+  border:1.5px solid var(--ink);border-radius:8px;background:#fff;padding:18px;text-align:center;
+  margin-bottom:16px;
+}
+.receipt .num{font-family:var(--mono);font-size:19px;font-weight:600;letter-spacing:.06em;margin:8px 0 0}
+.receipt .mockmark{
+  display:inline-block;margin-top:12px;border:1.5px dashed var(--alert);color:var(--alert);
+  font-family:var(--mono);font-size:10px;letter-spacing:.16em;padding:5px 10px;transform:rotate(-2.5deg);
+}
+
+.register{
+  border:1.5px solid var(--rule);border-radius:8px;background:#fff;overflow:hidden;margin-bottom:14px;
+}
+.register h3{
+  margin:0;padding:10px 13px;background:#FCFBF8;border-bottom:1.5px solid var(--rule);
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);font-weight:400;
+}
+.mv{display:flex;gap:12px;padding:12px 13px;border-bottom:1px solid var(--rule)}
+.mv:last-child{border-bottom:0}
+.mv .dot{width:9px;height:9px;border-radius:99px;background:var(--rule);margin-top:6px;flex:none}
+.mv.done .dot{background:var(--seal)}
+.mv.now .dot{background:var(--stamp);box-shadow:0 0 0 4px var(--stamp-soft)}
+.mv.late .dot{background:var(--alert)}
+.mv .t{font-weight:650;font-size:14.5px}
+.mv .d{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:2px}
+.mv .n{font-size:13.5px;color:var(--muted);margin-top:4px}
+
+.clock{
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  border:1.5px solid var(--rule);border-radius:8px;padding:13px;background:#fff;margin-bottom:14px;
+}
+.clock.late{border-color:var(--alert);background:var(--alert-soft)}
+.clock .lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.clock .val{font-family:var(--display);font-weight:800;font-size:23px;letter-spacing:-.02em}
+.clock.late .val{color:var(--alert)}
+
+.demo{
+  border:1.5px dashed var(--rule);border-radius:8px;padding:12px 13px;margin-bottom:14px;background:#FCFBF8;
+}
+.demo p{margin:0 0 9px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.demo .btnrow{margin-top:0}
+.demo button{font-size:13.5px;padding:8px 10px}
+
+/* ---------- misc ---------- */
+.loading{text-align:center;padding:34px 0;color:var(--muted);font-size:14.5px}
+.loading .beat{
+  display:inline-block;width:8px;height:8px;border-radius:99px;background:var(--stamp);margin:0 3px;
+  animation:beat 1s infinite ease-in-out;
+}
+.loading .beat:nth-child(2){animation-delay:.16s}
+.loading .beat:nth-child(3){animation-delay:.32s}
+@keyframes beat{0%,80%,100%{opacity:.25}40%{opacity:1}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.err{background:var(--alert-soft);border:1.5px solid var(--alert);border-radius:6px;padding:11px 12px;font-size:14px;margin-bottom:14px}
+footer{border-top:1.5px solid var(--rule);margin-top:36px;padding-top:14px;font-size:13px;color:var(--muted)}
+footer a{font-weight:600}
+[hidden]{display:none!important}
+.center{text-align:center}
+.quote{border-left:3px solid var(--rule);padding-left:12px;font-size:14.5px;color:var(--muted);margin:0 0 16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <h1 class="wordmark">Sahi <span>Jagah</span></h1>
+  <p class="tagline">Complaints that reach the right desk — and don't die there.</p>
+  <nav class="stepline" id="stepline" aria-label="Progress">
+    <b data-step="1">1 Describe</b><b>·</b>
+    <b data-step="2">2 Route</b><b>·</b>
+    <b data-step="3">3 Draft</b><b>·</b>
+    <b data-step="4">4 Track</b>
+  </nav>
+</header>
+
+<main>
+
+<!-- ============ 1. DESCRIBE ============ -->
+<section id="s-describe">
+  <h2 class="q">What went wrong?</h2>
+  <p class="sub">Say it the way you would say it to a person. Hindi, English, Chhattisgarhi, Tamil — whatever is easiest. No categories to pick.</p>
+
+  <div class="field">
+    <label for="story">Your problem</label>
+    <textarea id="story" placeholder="e.g. Mera PF ka claim do mahine se pending hai, EPFO portal pe status change hi nahi ho raha…"></textarea>
+    <button class="mic" id="mic" type="button" aria-pressed="false">Speak instead of typing</button>
+    <p class="hint" id="michint">Uses your phone's built-in speech recognition. Typing works everywhere.</p>
+  </div>
+
+  <div class="row">
+    <div class="field">
+      <label for="state">Your state</label>
+      <select id="state"></select>
+    </div>
+    <div class="field">
+      <label for="since">Since when</label>
+      <input type="date" id="since">
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="refno">Any reference number you already have <span style="font-weight:400;color:var(--muted)">— optional</span></label>
+    <input id="refno" placeholder="PNR, UAN, claim ID, docket no.">
+  </div>
+
+  <button class="btn" id="go">Find the right office</button>
+  <p class="hint center" style="margin-top:10px">Nothing is sent to any government system. <a href="#mock" id="mocklink">What's real, what's mocked</a></p>
+</section>
+
+<!-- ============ loading ============ -->
+<section id="s-loading" hidden>
+  <div class="loading">
+    <span class="beat"></span><span class="beat"></span><span class="beat"></span>
+    <p id="loadmsg">Reading your complaint and matching it to a jurisdiction…</p>
+  </div>
+</section>
+
+<!-- ============ 2. ROUTE ============ -->
+<section id="s-route" hidden>
+  <h2 class="q">Here's who owns this.</h2>
+  <p class="sub">Check it before we draft anything. If it looks wrong, switch it.</p>
+  <div id="routeout"></div>
+  <div class="btnrow">
+    <button class="btn ghost small" id="back1" style="flex:0 0 auto">Edit problem</button>
+    <button class="btn" id="todraft">Draft my complaint</button>
+  </div>
+</section>
+
+<!-- ============ 3. DRAFT ============ -->
+<section id="s-draft" hidden>
+  <h2 class="q">This is what gets filed.</h2>
+  <p class="sub">Your words on the left, the officer's format on the right. Edit either. Nothing is submitted anywhere.</p>
+  <div class="panel">
+    <h3 id="lang-label">In your words</h3>
+    <div class="body" id="draft-local"></div>
+  </div>
+  <div class="panel">
+    <h3>As it will be filed — English</h3>
+    <textarea id="draft-en" aria-label="Complaint text in English"></textarea>
+  </div>
+  <div class="btnrow">
+    <button class="btn ghost small" id="back2" style="flex:0 0 auto">Back</button>
+    <button class="btn" id="file">File it</button>
+  </div>
+</section>
+
+<!-- ============ 4. TRACK ============ -->
+<section id="s-track" hidden>
+  <div class="receipt">
+    <p class="eyebrow" style="margin-bottom:0">Acknowledgement</p>
+    <p class="num" id="regno"></p>
+    <p class="hint" id="filedon"></p>
+    <span class="mockmark">SIMULATED — NOT FILED</span>
+  </div>
+
+  <div class="clock" id="clock">
+    <div><div class="lab" id="clocklab">Reply due in</div><div class="val" id="clockval">21 days</div></div>
+    <div style="text-align:right"><div class="lab">Owner</div><div style="font-weight:650;font-size:14px" id="clockdept"></div></div>
+  </div>
+
+  <div class="register">
+    <h3>File movement</h3>
+    <div id="movement"></div>
+  </div>
+
+  <div id="appealbox"></div>
+
+  <div class="demo">
+    <p>Demo control — move the clock forward</p>
+    <div class="btnrow">
+      <button class="btn ghost small" data-adv="7">+7 days</button>
+      <button class="btn ghost small" data-adv="15">+15 days</button>
+      <button class="btn ghost small" data-adv="30">+30 days</button>
+    </div>
+  </div>
+
+  <button class="btn ghost" id="restart">Start a new complaint</button>
+</section>
+
+<!-- ============ MOCK DISCLOSURE ============ -->
+<section id="s-mock" hidden>
+  <h2 class="q">What's real, what's mocked</h2>
+  <p class="sub">Read this before you judge anything on this page.</p>
+
+  <div class="card seal">
+    <p class="eyebrow" style="color:var(--seal)">Real and working</p>
+    <ul style="margin:0;padding-left:18px;font-size:14.5px">
+      <li>Jurisdiction routing, confidence and reasoning — a live call to an OpenAI model against a curated department taxonomy.</li>
+      <li>Detection of state-subject grievances that do not belong on CPGRAMS at all.</li>
+      <li>Detection of complaints whose correct venue is a sectoral ombudsman rather than a grievance portal.</li>
+      <li>Bilingual complaint drafting in the structure a receiving officer expects.</li>
+      <li>Speech input, where the browser supports it.</li>
+      <li>Escalation logic and the drafted first appeal.</li>
+    </ul>
+  </div>
+
+  <div class="card warn">
+    <p class="eyebrow" style="color:var(--alert)">Mocked or simplified</p>
+    <ul style="margin:0;padding-left:18px;font-size:14.5px">
+      <li><b>Nothing is filed.</b> There is no connection to CPGRAMS, any ministry, or any state portal. No request leaves this site except the model call.</li>
+      <li>Registration numbers are generated locally and prefixed <span style="font-family:var(--mono)">MOCK</span>.</li>
+      <li>Officer designations, statuses and file movement entries are synthetic.</li>
+      <li>The department taxonomy is a curated subset of high-volume categories, not the full government directory.</li>
+      <li>SLA of 21 days and appeal window of 30 days follow the published CPGRAMS norms, but real timelines vary by department.</li>
+      <li>Routing accuracy has not been measured against a labelled grievance dataset. We have tested it by hand only.</li>
+      <li>The time control on the tracking page fast-forwards a simulated clock.</li>
+      <li>If the model key is unavailable, the app falls back to a canned routing result so the journey still completes. It says so on screen when that happens.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <p class="eyebrow">How this would work at scale</p>
+    <p style="margin:0;font-size:14.5px">This is a layer <b>in front of</b> the existing portal, not a replacement. Every grievance a department transfers away is already a labelled example of a misroute, so the classifier can be trained and continuously evaluated on the government's own transfer history. Each prevented misroute saves a manual transfer at the receiving end and weeks at the citizen's end. Rollout would start read-only: suggest the category, let the citizen confirm, measure transfer rates against a control group before automating anything.</p>
+  </div>
+
+  <button class="btn ghost" id="backmock">Back</button>
+</section>
+
+</main>
+
+<footer>
+  <p>Sahi Jagah is an independent student prototype for <b>Build What Moves India</b>. It is not a government product and has no affiliation with, or approval from, any ministry or department. <a href="#mock" id="mocklink2">What's real, what's mocked</a></p>
+</footer>
+</div>
+
+<script>
+const STATES=["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Delhi","Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal","Jammu & Kashmir","Ladakh","Andaman & Nicobar","Chandigarh","Dadra & Nagar Haveli and Daman & Diu","Lakshadweep","Puducherry"];
+const $=id=>document.getElementById(id);
+const sel=$("state");
+STATES.forEach(s=>{const o=document.createElement("option");o.value=o.textContent=s;if(s==="Chhattisgarh")o.selected=true;sel.appendChild(o)});
+
+let R=null, prevScreen="s-describe";
+const SCREENS=["s-describe","s-loading","s-route","s-draft","s-track","s-mock"];
+function show(id){SCREENS.forEach(s=>$(s).hidden=(s!==id));window.scrollTo(0,0);mark(id)}
+function mark(id){
+  const map={"s-describe":1,"s-loading":1,"s-route":2,"s-draft":3,"s-track":4};
+  document.querySelectorAll("#stepline b[data-step]").forEach(b=>{
+    b.classList.toggle("on", Number(b.dataset.step)===map[id]);
+  });
+}
+mark("s-describe");
+
+/* ---------- speech ---------- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const mic=$("mic");
+if(!SR){ mic.hidden=true; $("michint").textContent="Speech input isn't supported in this browser. Typing works everywhere."; }
+else{
+  let rec=null, on=false;
+  mic.addEventListener("click",()=>{
+    if(on){rec && rec.stop(); return;}
+    rec=new SR(); rec.lang="hi-IN"; rec.interimResults=true; rec.continuous=true;
+    const base=$("story").value?$("story").value+" ":"";
+    rec.onresult=e=>{
+      let t="";for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;
+      $("story").value=base+t;
+    };
+    rec.onerror=()=>{$("michint").textContent="Couldn't hear anything. Please type instead."};
+    rec.onend=()=>{on=false;mic.setAttribute("aria-pressed","false");mic.textContent="Speak instead of typing"};
+    rec.start(); on=true; mic.setAttribute("aria-pressed","true"); mic.textContent="Listening — tap to stop";
+  });
+}
+
+/* ---------- route ---------- */
+$("go").addEventListener("click", async ()=>{
+  const story=$("story").value.trim();
+  if(story.length<12){ alert("Tell us a little more — one or two sentences is enough."); $("story").focus(); return; }
+  show("s-loading");
+  try{
+    const res=await fetch("/api/route",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({story,state:sel.value,since:$("since").value,refno:$("refno").value})
+    });
+    R=await res.json();
+    if(R.error) throw new Error(R.error);
+    renderRoute();
+    show("s-route");
+  }catch(e){
+    show("s-describe");
+    const d=document.createElement("div");
+    d.className="err";
+    d.textContent="Couldn't reach the routing service. Check your connection and try again.";
+    $("s-describe").prepend(d);
+    setTimeout(()=>d.remove(),6000);
+  }
+});
+
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+function renderRoute(){
+  const out=$("routeout"); out.innerHTML="";
+  let html="";
+
+  if(R.fallback){
+    html+=`<div class="err">The model key wasn't available, so this is a stored example result. The rest of the journey works normally.</div>`;
+  }
+
+  if(R.wrong_venue){
+    html+=`<div class="card warn">
+      <p class="eyebrow" style="color:var(--alert)">Don't file this on CPGRAMS</p>
+      <p style="margin:0 0 8px;font-size:15px"><b>${esc(R.wrong_venue_reason)}</b></p>
+      <p style="margin:0;font-size:14.5px">Correct venue: <b>${esc(R.correct_venue)}</b></p>
+      <p class="hint" style="margin-top:8px">Filing it in the wrong place is the single most common reason a complaint is closed without action. We'll still draft it for you — addressed to the right office.</p>
+    </div>`;
+  }
+
+  html+=`<div class="stamp">
+    <p class="eyebrow">Goes to</p>
+    <p class="dept">${esc(R.department)}</p>
+    <p class="deptmeta">${esc(R.category)} &nbsp;·&nbsp; ${R.is_state_subject?"STATE SUBJECT":"CENTRAL"}</p>
+    <div class="conf"><div class="bar"><i style="width:${Math.round((R.confidence||0.8)*100)}%"></i></div>
+      <span>${Math.round((R.confidence||0.8)*100)}% match</span></div>
+    <p class="why">${esc(R.reasoning)}</p>
+  </div>`;
+
+  if(R.alternates && R.alternates.length){
+    html+=`<p class="eyebrow">Not right? Send it here instead</p><div class="chips" id="alts"></div>`;
+  }
+  out.innerHTML=html;
+
+  if(R.alternates && R.alternates.length){
+    const box=$("alts");
+    R.alternates.forEach(a=>{
+      const b=document.createElement("button");
+      b.className="chip"; b.type="button"; b.textContent=a;
+      b.addEventListener("click",()=>{
+        const old=R.department;
+        R.department=a; R.reasoning="You chose this office instead of the suggested "+old+".";
+        R.confidence=1; R.alternates=R.alternates.filter(x=>x!==a).concat([old]);
+        renderRoute();
+      });
+      box.appendChild(b);
+    });
+  }
+}
+
+$("back1").addEventListener("click",()=>show("s-describe"));
+
+/* ---------- draft ---------- */
+$("todraft").addEventListener("click",()=>{
+  $("lang-label").textContent="In your words — "+(R.local_language||"your language");
+  $("draft-local").textContent=R.draft_local||$("story").value;
+  $("draft-en").value=R.draft_en||"";
+  show("s-draft");
+});
+$("back2").addEventListener("click",()=>show("s-route"));
+
+/* ---------- file + track ---------- */
+let filedAt=null, offsetDays=0;
+const SLA=21, APPEAL=30;
+
+$("file").addEventListener("click",()=>{
+  filedAt=new Date(); offsetDays=0;
+  const n=String(Math.floor(Math.random()*899999+100000));
+  $("regno").textContent="MOCK/SJ/2026/"+n;
+  $("filedon").textContent="Filed "+filedAt.toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})+" · "+esc(R.department);
+  $("clockdept").textContent=R.department;
+  renderTrack();
+  show("s-track");
+});
+
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+function fmt(d){return d.toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})}
+
+function renderTrack(){
+  const today=addDays(filedAt,offsetDays);
+  const due=addDays(filedAt,SLA);
+  const left=Math.ceil((due-today)/86400000);
+  const late=left<=0;
+
+  $("clock").classList.toggle("late",late);
+  $("clocklab").textContent = late ? "Reply overdue by" : "Reply due in";
+  $("clockval").textContent = (late?Math.abs(left):left)+" days";
+
+  const rows=[
+    {c:"done",t:"Complaint received",d:fmt(filedAt),n:"Acknowledgement generated. Assigned to "+R.department+"."},
+    {c:"done",t:"Assigned to Nodal Officer",d:fmt(addDays(filedAt,1)),n:"Subordinate office: "+(R.subordinate_office||R.department)+"."},
+  ];
+  if(offsetDays>=5) rows.push({c:"done",t:"Marked to dealing officer",d:fmt(addDays(filedAt,5)),n:"Under examination."});
+  if(!late) rows.push({c:"now",t:"Awaiting reply",d:"Due "+fmt(due),n:"The department has "+SLA+" days from the date of receipt."});
+  else{
+    rows.push({c:"late",t:"Deadline passed with no reply",d:fmt(due),n:"You can now file a first appeal to the Appellate Authority."});
+    if(offsetDays>=SLA+APPEAL) rows.push({c:"late",t:"Appeal window closing",d:fmt(addDays(due,APPEAL)),n:"Appeals are ordinarily filed within 30 days."});
+  }
+
+  $("movement").innerHTML=rows.map(r=>
+    `<div class="mv ${r.c}"><div class="dot"></div><div>
+      <div class="t">${esc(r.t)}</div><div class="d">${esc(r.d)}</div><div class="n">${esc(r.n)}</div>
+    </div></div>`).join("");
+
+  $("appealbox").innerHTML = late ? `<div class="card seal">
+      <p class="eyebrow" style="color:var(--seal)">Your appeal is already written</p>
+      <p style="margin:0 0 10px;font-size:14.5px">Most people never appeal, because nobody tells them they can. The deadline has passed, so this is ready to send to the Appellate Authority at ${esc(R.department)}.</p>
+      <details><summary style="cursor:pointer;font-weight:650;font-size:14.5px">Read the drafted appeal</summary>
+        <div style="white-space:pre-wrap;font-size:14px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--rule)">${esc(appealText(due))}</div>
+      </details>
+    </div>` : "";
+}
+
+function appealText(due){
+  return `To,
+The Appellate Authority
+${R.department}
+
+Subject: First appeal against non-redressal of grievance ${$("regno").textContent}
+
+Sir/Madam,
+
+I registered the above grievance on ${fmt(filedAt)}. The prescribed period for disposal expired on ${fmt(due)} and I have received no reply or disposal order.
+
+Substance of the grievance:
+${($("draft-en").value||"").slice(0,600)}
+
+I request that the matter be examined and a reasoned decision communicated to me, along with the reasons for the delay in disposal.
+
+Yours faithfully,
+[Your name]
+[Address · Mobile · Email]
+
+— Drafted by Sahi Jagah. Simulated appeal; not submitted anywhere.`;
+}
+
+document.querySelectorAll("[data-adv]").forEach(b=>{
+  b.addEventListener("click",()=>{offsetDays+=Number(b.dataset.adv);renderTrack()});
+});
+$("restart").addEventListener("click",()=>{
+  $("story").value="";$("refno").value="";R=null;offsetDays=0;show("s-describe");
+});
+
+/* ---------- disclosure ---------- */
+function openMock(e){e.preventDefault();prevScreen=SCREENS.find(s=>!$(s).hidden)||"s-describe";show("s-mock")}
+$("mocklink").addEventListener("click",openMock);
+$("mocklink2").addEventListener("click",openMock);
+$("backmock").addEventListener("click",()=>show(prevScreen));
+</script>
+</body>
+</html>

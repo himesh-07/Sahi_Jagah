@@ -1,0 +1,8 @@
+{
+  "name": "sahi-jagah",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Routes Indian citizens' grievances to the office that actually has jurisdiction.",
+  "engines": { "node": ">=18" }
+}
